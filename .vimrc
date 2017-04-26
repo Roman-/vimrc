@@ -1,13 +1,17 @@
 autocmd BufWinLeave *.* mkview
 autocmd BufWinEnter *.* silent loadview 
+"autocmd BufEnter * silent! lcd %:p:h
 set relativenumber 
 set number
 :syntax on
-filetype plugin indent on
+"filetype plugin indent on
 hi Comment ctermfg=120
+hi Search ctermfg=3
 set nocompatible
 set ignorecase
 set incsearch
+"set mouse=a
+"set foldmethod=syntax
 set foldmethod=marker
 set foldlevelstart=20
 hi Folded ctermbg=234 ctermfg=94
@@ -17,9 +21,16 @@ hi CursorLine cterm=NONE ctermbg=234 guibg=235
 set hlsearch
 set smartindent
 set shiftwidth=4 smarttab expandtab
+set path+=**
+set tags=./tags,tags;$HOME
 
 set clipboard^=unnamed,unnamedplus
 set timeout timeoutlen=700 ttimeoutlen=700
+
+" shouldn't it be by default?
+nmap dl vld
+nmap dh vhd
+nmap <c-g> :echom expand('%:p')<Enter>
 
 " vim niceties 
 
@@ -28,6 +39,7 @@ set timeout timeoutlen=700 ttimeoutlen=700
 vnoremap <tab> <esc>
 inoremap <tab> <esc>
 inoremap <S-tab> <space><space><space><space>
+" nmap <tab> silent exec "noh"<Enter>
 nmap <tab> :noh<Enter>
 nnoremap r<tab> <nop>
 "}}}
@@ -54,6 +66,7 @@ noremap <space>l $
 nnoremap <C-a> ggVG
 " ctrl+d = signal eof = quit
 nnoremap <space>s :w<Enter>
+"nnoremap <S-w> :w<Enter>:bd<Enter>
 inoremap <C-BS> vbc
 noremap! <C-BS> db
 nnoremap <BS> X
@@ -68,7 +81,7 @@ vnoremap <C-x> "0d
 " enter special symbols with control-C
 inoremap <C-c> <C-v>
 
-" paste: <C-V> always puts things that were yanked, not deleted;
+" paste: <C-V> always puts things that were YANKED, not deleted;
 inoremap <C-v> <C-r>0
 nnoremap <C-v> i<C-r>0
 vnoremap <C-v> c<C-r>0
@@ -135,9 +148,9 @@ function! DiscardAndQuit()
     endif
 endfunction
 
-nnoremap <C-w> :call CloseBuffer()<Enter>
-nnoremap <C-d> :call CloseBuffer()<Enter>
-nnoremap <S-w> :call SaveAndCloseBuffer()<Enter>
+noremap <C-w> :call CloseBuffer()<Enter>
+noremap <C-d> :call CloseBuffer()<Enter>
+noremap <S-w> :call SaveAndCloseBuffer()<Enter>
 nnoremap ZQ :call DiscardAndQuit()<Enter>
 "}}}
 "{{{ airline
@@ -163,17 +176,32 @@ Plugin 'VundleVim/Vundle.vim'
 " Keep Plugin commands between vundle#begin/end.
 " plugin on GitHub repo
 Plugin 'vim-airline/vim-airline'
+Plugin 'https://github.com/lyokha/vim-xkbswitch'
 
-" All of your Plugins must be added before the following line
+ "All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
 "}}}
+
+" Qt-ish ctrl+k to navigate
+nmap <c-k> :find 
 
 function! Mosh_Flip_Ext()
   " Switch editing between .c* and .h* files (and more).
   " Since .h file can be in a different dir, call find.
   if match(expand("%"),'\.cpp') > 0
     let s:flipname = substitute(expand("%"),'\.cpp\(.*\)','.h\1',"")
+    if (filereadable(s:flipname))
+        exe ":find " s:flipname
+        return
+    endif
+    let s:flipname = substitute(expand("%"),'\.cpp\(.*\)','.hpp\1',"")
+    if (filereadable(s:flipname))
+        exe ":find " s:flipname
+        return
+    endif
+  elseif match(expand("%"),"\\.hpp") > 0
+    let s:flipname = substitute(expand("%"),'\.hpp\(.*\)','.cpp\1',"")
     if (filereadable(s:flipname))
         exe ":find " s:flipname
     endif
@@ -187,6 +215,38 @@ function! Mosh_Flip_Ext()
   endif
 endfun
 
-map Y :call Mosh_Flip_Ext()<CR>
+function! Follow()
+    try
+        normal! <c-]>
+    catch
+        echo "tag not found sorry"
+    finally
+        echo "tag not found 2"
+    endtry
+endfun
 
-set path=$PWD/**
+map <c-y> :call Mosh_Flip_Ext()<CR>
+map <c-u> <c-]>
+
+function! ChangeLoc()
+    silent exec "!xdotool key ctrl+shift"
+    redraw!
+    echom 'layout changed'
+endfun
+
+" xkbswitch {{{
+let g:XkbSwitchEnabled = 1
+let g:XkbSwitchIMappings = ['ru']
+
+nmap о :call ChangeLoc()<CR>j
+nmap л :call ChangeLoc()<CR>k
+nmap О :call ChangeLoc()<CR>J
+nmap Л :call ChangeLoc()<CR>K
+nmap ф :call ChangeLoc()<CR>a
+nmap ш :call ChangeLoc()<CR>i
+nmap Ф :call ChangeLoc()<CR>A
+nmap Ш :call ChangeLoc()<CR>I
+nmap а <c-f>
+nmap в <c-f>
+
+"}}}
