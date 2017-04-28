@@ -1,35 +1,39 @@
 autocmd BufWinLeave *.* mkview
-autocmd BufWinEnter *.* silent loadview 
-"autocmd BufEnter * silent! lcd %:p:h
-set relativenumber 
+autocmd BufWinEnter *.* silent loadview
+set relativenumber
 set number
 :syntax on
-"filetype plugin indent on
-hi Comment ctermfg=120
-hi Search ctermfg=3
 set nocompatible
-set ignorecase
-set incsearch
+
 "set mouse=a
-"set foldmethod=syntax
 set foldmethod=marker
 set foldlevelstart=20
 hi Folded ctermbg=234 ctermfg=94
 hi CursorLineNr cterm=bold ctermfg=226
 set cursorline
 hi CursorLine cterm=NONE ctermbg=234 guibg=235
+hi Comment ctermfg=120
+hi Search ctermfg=3
+
+set ignorecase
+set incsearch
 set hlsearch
+
 set smartindent
 set shiftwidth=4 smarttab expandtab
+
 set path+=**
 set tags=./tags,tags;$HOME
 
 set clipboard^=unnamed,unnamedplus
-set timeout timeoutlen=700 ttimeoutlen=700
 
-" shouldn't it be by default?
+" shoudn't it be by default?
 nmap dl vld
 nmap dh vhd
+nmap cl vlc
+nmap ch vhc
+nmap yl vly
+nmap yh vhy
 nmap <c-g> :echom expand('%:p')<Enter>
 
 " vim niceties 
@@ -39,12 +43,12 @@ nmap <c-g> :echom expand('%:p')<Enter>
 vnoremap <tab> <esc>
 inoremap <tab> <esc>
 inoremap <S-tab> <space><space><space><space>
-" nmap <tab> silent exec "noh"<Enter>
-nmap <tab> :noh<Enter>
+nmap <tab> :noh<Enter>:echom ""<Enter>
 nnoremap r<tab> <nop>
 "}}}
 
 " positioning
+nmap <space> <nop>
 noremap <space>u zbkj
 noremap <space>d ztkj
 noremap <space><space> zz
@@ -64,13 +68,9 @@ noremap <space>l $
 "}}}
 "{{{ making habitual hotkeys work in vim
 nnoremap <C-a> ggVG
-" ctrl+d = signal eof = quit
 nnoremap <space>s :w<Enter>
-"nnoremap <S-w> :w<Enter>:bd<Enter>
-inoremap <C-BS> vbc
-noremap! <C-BS> db
-nnoremap <BS> X
-nnoremap <CR> o
+"nnoremap <BS> X
+"nnoremap <CR> o
 "}}}
 "{{{ copy / paste paste
 
@@ -110,17 +110,11 @@ nnoremap <space>[ A {o}O
 " replace 'Abc' with 'const Abc&'
 nnoremap <space>c diwiconst pa&
 " add braces
-" nnoremap [ $o{o
-" delete semicolon and add braces
-" nnoremap { $xo{o
-"}}}
-"{{{vimnotes
-" TODO MARKDOWN shortcuts support
 "}}}
 "{{{ working with buffers
 noremap <space>k :bn<CR>
 noremap <space>j :bp<CR>
-:set hidden " allow to switch tabs when buffer is modified
+set hidden " allow to switch tabs when buffer is modified
 function! CloseBuffer()
     if (&mod == 1)
         echom 'file has unsaved changes'
@@ -153,6 +147,14 @@ noremap <C-d> :call CloseBuffer()<Enter>
 noremap <S-w> :call SaveAndCloseBuffer()<Enter>
 nnoremap ZQ :call DiscardAndQuit()<Enter>
 "}}}
+
+if has('persistent_undo')
+    set undofile                " So is persistent undo ...
+    set undolevels=100          " Maximum number of changes that can be undone
+    set undoreload=10000        " Maximum number lines to save for undo on a buffer reload
+    set undodir=/tmp
+endif
+
 "{{{ airline
 let g:airline#extensions#tabline#enabled = 1
 " Show just the filename
@@ -186,6 +188,7 @@ filetype plugin indent on    " required
 " Qt-ish ctrl+k to navigate
 nmap <c-k> :find 
 
+" TODO deal with .c and .cpp
 function! Mosh_Flip_Ext()
   " Switch editing between .c* and .h* files (and more).
   " Since .h file can be in a different dir, call find.
@@ -215,17 +218,9 @@ function! Mosh_Flip_Ext()
   endif
 endfun
 
-function! Follow()
-    try
-        normal! <c-]>
-    catch
-        echo "tag not found sorry"
-    finally
-        echo "tag not found 2"
-    endtry
-endfun
-
 map <c-y> :call Mosh_Flip_Ext()<CR>
+
+" TODO follow symbol under cursor: gf, tag, gd
 map <c-u> <c-]>
 
 function! ChangeLoc()
@@ -248,5 +243,11 @@ nmap Ф :call ChangeLoc()<CR>A
 nmap Ш :call ChangeLoc()<CR>I
 nmap а <c-f>
 nmap в <c-f>
-
 "}}}
+
+set list
+set listchars=tab:›\ ,trail:•,extends:#,nbsp:. " Highlight problematic whitespace
+set nojoinspaces
+set pastetoggle=<F12>
+:au InsertEnter * set nolist
+:au InsertLeave * set list
