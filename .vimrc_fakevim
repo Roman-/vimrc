@@ -61,14 +61,13 @@ nnoremap <space>s :w<Enter>
 " copy
 nnoremap <C-c> myyiw`y
 vnoremap <C-c> y
-vnoremap <C-x> "0d
 " enter special symbols with control-C
 inoremap <C-c> <C-v>
 
 " paste: <C-V> always puts things that were YANKED, not deleted;
 inoremap <C-v> <C-r>0
 nnoremap <C-v> i<C-r>0
-vnoremap <C-v> c<C-r>0
+" vnoremap p c<C-r>0
 " change-in-word is an extremely common action; use q for it
 nnoremap q ciw
 nnoremap Q daw
@@ -82,15 +81,17 @@ nnoremap <space>m q
 " space + ; = append ';' to the end of the line
 nnoremap <space>; msA;`s
 " space + / = comment the current line
-nnoremap <space>/ msI// `sll
-" space + / = comment the current line
 vnoremap <space>/ ms:s/^/\/\//g<Enter>`s:noh<Enter>
+nnoremap <space>/ mtI//<Esc>`t
 " <C-j> for ignoring input in FakeVim
 nnoremap <C-j> ,
+" duplicate current line and comment it for fast change
+nnoremap <space>y yymoPI// `o
 " when the cursor is on the word, add #include directive with that word on space + i
 nnoremap <space>i miyiw?#include<Enter>o#include <pa>`ik$/<C-r>0<Enter>zh
 " insert for construction
-nnoremap <space>f afor (int i = 0; i < N; ++i)FNs
+nnoremap <space>f afor (size_t i = 0; i < N; ++i)FNs
+nnoremap co ocout << N << endl;FNs
 " insert extended if-else construction with brackets
 nnoremap <space>e aif (N)o{o}oelseo{o}?N<Enter>s
 " space-[ for opening braces
@@ -99,3 +100,6 @@ nnoremap <space>[ A {o}O
 nnoremap <space>c diwiconst pa&
 nnoremap <C-w> :q<Enter>
 nnoremap <S-w> :wq<Enter>
+" go from function declaration to definition: copy line, mark position, copy
+" nmap <space>] mt"lyy?class <Enter>w"cyiw`t<c-y>Go<c-r>lk^f(bi<C-r>c:::s:^\s*:<Enter>:noh<Enter>$s {<Enter>}O
+" nmap <space>] yy<c-y>Gp

@@ -1,29 +1,62 @@
 autocmd BufWinLeave *.* mkview
 autocmd BufWinEnter *.* silent loadview
+autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+:source /home/lo/.vim/autoload/matchit.vim
 set relativenumber
 set number
-:syntax on
+syntax on
+autocmd BufNewFile,BufRead * if expand('%:t') !~ '\.' | endif
 set nocompatible
 
-"set mouse=a
-set foldmethod=marker
-set foldlevelstart=20
-hi Folded ctermbg=234 ctermfg=94
-hi CursorLineNr cterm=bold ctermfg=226
 set cursorline
-hi CursorLine cterm=NONE ctermbg=234 guibg=235
-hi Comment ctermfg=120
-hi Search ctermfg=3
+hi CursorLine cterm=NONE ctermbg=234 guibg=234
+hi CursorLineNr cterm=bold ctermfg=226
+hi Folded ctermbg=234 ctermfg=94
+hi Comment ctermfg=14
+hi cTodo ctermbg=236
+hi Search ctermfg=0 ctermbg=154
+hi Visual ctermbg=214 ctermfg=0
+" c and cpp keywords
+hi cStorageClass ctermfg=11
+hi cppStorageClass ctermfg=11
+hi cStructure ctermfg=11
+hi cppStructure ctermfg=11
+hi cModifier ctermfg=11
+hi cppModifier ctermfg=11
+hi cStatement ctermfg=11
+hi cppStatement ctermfg=11
+hi cRepeat ctermfg=11
+hi cppRepeat ctermfg=11
+hi cConditional ctermfg=11
+" values: red and pink
+hi cNumber ctermfg=13
+hi cFloat ctermfg=13
+hi cppBoolean ctermfg=13
+hi cString ctermfg=9
+hi cSpecial ctermfg=1
+hi cFormat ctermfg=166
+hi cCharacter ctermfg=9
+" other keywords
+hi cType ctermfg=154
+hi cppType ctermfg=154
 
 set ignorecase
 set incsearch
 set hlsearch
 
 set smartindent
-set shiftwidth=4 smarttab expandtab
+set shiftwidth=4 tabstop=4 smarttab expandtab
 
+set path=.,,
 set path+=**
 set tags=./tags,tags;$HOME
+
+function! MakeTags()
+    silent exec "!ctags -R --exclude=*.min.js --exclude=jspdf --exclude=alias ."
+    redraw!
+    echom 'Tags made     >^.^<   '
+endfun
+nmap T :call MakeTags()<CR>
 
 set clipboard^=unnamed,unnamedplus
 
@@ -36,14 +69,14 @@ nmap yl vly
 nmap yh vhy
 nmap <c-g> :echom expand('%:p')<Enter>
 
-" vim niceties 
+" vim niceties
 
 "{{{escaping to the normal mode with Tab.
 " See there why this takes place: http://vim.wikia.com/wiki/Avoid_the_escape_key
 vnoremap <tab> <esc>
 inoremap <tab> <esc>
 inoremap <S-tab> <space><space><space><space>
-nmap <tab> :noh<Enter>:echom ""<Enter>
+nnoremap <tab> :noh<Enter>:echom ""<Enter>
 nnoremap r<tab> <nop>
 "}}}
 
@@ -65,27 +98,27 @@ noremap <c-h> 5h
 noremap <c-l> 5l
 noremap <space>h ^
 noremap <space>l $
+" J used to be for join - gj
+nnoremap zj mz:join<Enter>`z
+inoremap <c-BS> <c-w>
 "}}}
 "{{{ making habitual hotkeys work in vim
 nnoremap <C-a> ggVG
 nnoremap <space>s :w<Enter>
-"nnoremap <BS> X
-"nnoremap <CR> o
 "}}}
-"{{{ copy / paste paste
+"{{{ copy / paste
 
-" copy
-nnoremap <C-c> myyiw`y
-vnoremap <C-c> y
-vnoremap <C-x> "0d
 " enter special symbols with control-C
 inoremap <C-c> <C-v>
 
 " paste: <C-V> always puts things that were YANKED, not deleted;
 inoremap <C-v> <C-r>0
 nnoremap <C-v> i<C-r>0
-vnoremap <C-v> c<C-r>0
-" change-in-word is an extremely common action; use q for it
+" non of these works. I guess what I should do is change behavior when paste over selected
+" nnoremap p a<C-r>0
+" vnoremap p "0p
+
+" change-in-word is a very common action; use q for it
 nnoremap q ciw
 nnoremap Q daw
 vnoremap q c
@@ -94,26 +127,41 @@ nnoremap <space>q mXyiw`X
 " ...and space-m for macro
 nnoremap <space>m q
 "}}}
-"{{{ cpp-related
+"{{{ cpp- and js-related
 " space + ; = append ';' to the end of the line
 nnoremap <space>; msA;`s
-" <C-j> for ignoring input in FakeVim
+nnoremap <space>. msA.`s
+" space + / = comment current line
+" map <C-/> :s:^\/\/<CR>
+" nnoremap <C-/>/ msI// `sll
+let CommentSymbol='//'
+function! CommentUncomment()
+    if match(getline('.'), "^\\s*//") != -1
+        silent s:\/\/\s*::g
+    else
+        silent exe "norm moI// `o"
+    endif
+endfu
+nnoremap <space>/ mp :call CommentUncomment()<CR>`p
+" <C-j> for ignoring input in Qt FakeVim
 nnoremap <C-j> ,
+" duplicate current line and comment it for fast change
+nnoremap <space>y "9yymo"9PI// `o
 " when the cursor is on the word, add #include directive with that word on space + i
 nnoremap <space>i miyiw?#include<Enter>o#include <pa>`ik$/<C-r>0<Enter>zh
-" insert for construction
-nnoremap <space>f afor (int i = 0; i < N; ++i)FNs
-" insert extended if-else construction with brackets
-nnoremap <space>e aif (N)o{o}oelseo{o}?N<Enter>s
 " space-[ for opening braces
 nnoremap <space>[ A {o}O
 " replace 'Abc' with 'const Abc&'
-nnoremap <space>c diwiconst pa&
+nnoremap <space>C diwiconst pa&
+" go from function declaration to definition: copy line, mark position, copy
+nmap <space>] mt"lyy?class <CR>w"cyiw`t<c-y>Go<c-r>lk^f(bi<C-r>c:::s:^\s*:<CR>:noh<CR>$s {<CR>}O
 " add braces
 "}}}
 "{{{ working with buffers
 noremap <space>k :bn<CR>
 noremap <space>j :bp<CR>
+" this opens just closed tab just like in web browser
+map <c-s-t> <c-o>
 set hidden " allow to switch tabs when buffer is modified
 function! CloseBuffer()
     if (&mod == 1)
@@ -160,8 +208,10 @@ let g:airline#extensions#tabline#enabled = 1
 " Show just the filename
 let g:airline#extensions#tabline#buffer_min_count = 2
 let g:airline#extensions#tabline#fnamemod = ':t'
-let g:airline#extensions#tabline#left_sep = ' '
-let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline_skip_empty_sections = 1
+let g:airline#extensions#default#layout = [ [ 'a', 'b', 'c' ], [ 'x', 'y', 'z', 'error' ] ]
+let g:airline_section_y=''
+let g:airline_section_x=''
 
 "}}}
 "{{{ vundle
@@ -179,6 +229,7 @@ Plugin 'VundleVim/Vundle.vim'
 " plugin on GitHub repo
 Plugin 'vim-airline/vim-airline'
 Plugin 'https://github.com/lyokha/vim-xkbswitch'
+Plugin 'mileszs/ack.vim'
 
  "All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -220,13 +271,10 @@ endfun
 
 map <c-y> :call Mosh_Flip_Ext()<CR>
 
-" TODO follow symbol under cursor: gf, tag, gd
-map <c-u> <c-]>
-
 function! ChangeLoc()
-    silent exec "!xdotool key ctrl+shift"
+    silent exec "!xdotool keyup Shift_L Shift_R && xdotool key ctrl+shift"
     redraw!
-    echom 'layout changed'
+    echom 'keyboard layout changed'
 endfun
 
 " xkbswitch {{{
@@ -241,13 +289,69 @@ nmap ф :call ChangeLoc()<CR>a
 nmap ш :call ChangeLoc()<CR>i
 nmap Ф :call ChangeLoc()<CR>A
 nmap Ш :call ChangeLoc()<CR>I
+nmap Ц :call ChangeLoc()<CR>W
 nmap а <c-f>
 nmap в <c-f>
 "}}}
 
+" tests l
 set list
 set listchars=tab:›\ ,trail:•,extends:#,nbsp:. " Highlight problematic whitespace
 set nojoinspaces
 set pastetoggle=<F12>
 :au InsertEnter * set nolist
 :au InsertLeave * set list
+
+"this is for the vimnotes
+nmap zo o[ ] 
+nmap z- o- 
+nmap zO O[ ] 
+nmap zm mz0lF[lrx<Esc>`z
+nmap zu mz0lF[lr <Esc>`z
+
+"inoremap  
+"set cpt=.
+set complete-=i
+let g:netrw_lifestyle=3
+let g:netrw_browse_split = 4
+let g:netrw_altv = 1
+" Ack
+let g:ackprg = 'ag --vimgrep'
+" noremap <esc> :cclose<Enter>:echom ""<Enter>
+"tests
+nmap <C-S-P> :call <SID>SynStack()<CR>
+function! <SID>SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
+
+"surround selected with quotes or something
+nmap z<Space> i <Esc>la <Esc>h
+vmap z<Space> "tdi t <Esc>
+vmap z" "tdi"t"<Esc>
+vmap z' "tdi't'<Esc>
+vmap z< "tdi<t><Esc>
+
+" web: launch chrome
+command! I !google-chrome --allow-file-access-from-files --allow-file-access index.html
+
+"shortcuts for coding
+
+" insert "for" construction
+nnoremap <space>f ofor (size_t i = 0; i < N; ++i)FNs
+nnoremap co ocout << N << endl;FNs
+" common JS funcs
+inoremap <c-g> console.log("");hhi
+inoremap <c-f> function 
+" jquery
+inoremap <c-d> $("<div></div>")
+inoremap <c-b> $("<button class='btn btn-primary'></button>")
+nmap zq viw"tdi$("#t")<Esc>
+imap <c-q> $("#");<Esc>hhi
+
+"ack
+nmap <Space>a :tab split<CR>:Ack ""<Left>
+nmap <Space>A :tab split<CR>:Ack <C-r><C-w><CR>
+nmap <Space>c :cclose<CR>:tabc<CR>
