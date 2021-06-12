@@ -50,9 +50,10 @@ set shiftwidth=4 tabstop=4 smarttab expandtab
 set path=.,,
 set path+=**
 set tags=./tags,tags;$HOME
+set wildignore+=**/_deps/** 
 
 function! MakeTags()
-    silent exec "!ctags -R --exclude=*.min.js --exclude=jspdf --exclude=alias ."
+    silent exec "!ctags -R --exclude=*.min.js --exclude=jspdf --exclude=alias --exclude=build ."
     redraw!
     echom 'Tags made     >^.^<   '
 endfun
@@ -97,6 +98,7 @@ noremap L 15l
 noremap <c-h> 5h
 noremap <c-l> 5l
 noremap <space>h ^
+noremap <space>H o145a_77hR
 noremap <space>l $
 " J used to be for join - gj
 nnoremap zj mz:join<Enter>`z
@@ -105,6 +107,7 @@ inoremap <c-BS> <c-w>
 "{{{ making habitual hotkeys work in vim
 nnoremap <C-a> ggVG
 nnoremap <space>s :w<Enter>
+nnoremap <space>S :wa<Enter>
 "}}}
 "{{{ copy / paste
 
@@ -175,6 +178,7 @@ function! CloseBuffer()
     endif
 endfunction
 
+" for multiple buffers
 function! SaveAndCloseBuffer()
     if (&mod == 1)
         write
@@ -182,6 +186,7 @@ function! SaveAndCloseBuffer()
     :call CloseBuffer()
 endfunction
 
+" for multiple buffers
 function! DiscardAndQuit()
     if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
         quit!
@@ -200,7 +205,7 @@ if has('persistent_undo')
     set undofile                " So is persistent undo ...
     set undolevels=100          " Maximum number of changes that can be undone
     set undoreload=10000        " Maximum number lines to save for undo on a buffer reload
-    set undodir=/tmp
+    set undodir=$HOME/.vim/undo
 endif
 
 "{{{ airline
@@ -224,12 +229,13 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
-" The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
 " plugin on GitHub repo
 Plugin 'vim-airline/vim-airline'
 Plugin 'https://github.com/lyokha/vim-xkbswitch'
 Plugin 'mileszs/ack.vim'
+Plugin 'https://github.com/preservim/nerdtree'
+Plugin 'octol/vim-cpp-enhanced-highlight'
 
  "All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -254,6 +260,12 @@ function! Mosh_Flip_Ext()
         exe ":find " s:flipname
         return
     endif
+  elseif match(expand("%"),'\.c') > 0
+    let s:flipname = substitute(expand("%"),'\.c\(.*\)','.h\1',"")
+    if (filereadable(s:flipname))
+        exe ":find " s:flipname
+        return
+    endif
   elseif match(expand("%"),"\\.hpp") > 0
     let s:flipname = substitute(expand("%"),'\.hpp\(.*\)','.cpp\1',"")
     if (filereadable(s:flipname))
@@ -263,6 +275,11 @@ function! Mosh_Flip_Ext()
     let s:flipname = substitute(expand("%"),'\.h\(.*\)','.cpp\1',"")
     if (filereadable(s:flipname))
         exe ":find " s:flipname
+    else
+        let s:flipnamec = substitute(expand("%"),'\.h\(.*\)','.c\1',"")
+        if (filereadable(s:flipnamec))
+            exe ":find " s:flipnamec
+        endif
     endif
   else
     echom 'file is not h(pp) or c(pp)'
@@ -272,7 +289,7 @@ endfun
 map <c-y> :call Mosh_Flip_Ext()<CR>
 
 function! ChangeLoc()
-    silent exec "!xdotool keyup Shift_L Shift_R && xdotool key ctrl+shift"
+    silent exec "!xdotool keyup Alt_L Space && xdotool key alt+space"
     redraw!
     echom 'keyboard layout changed'
 endfun
@@ -287,6 +304,7 @@ nmap О :call ChangeLoc()<CR>J
 nmap Л :call ChangeLoc()<CR>K
 nmap ф :call ChangeLoc()<CR>a
 nmap ш :call ChangeLoc()<CR>i
+nmap щ :call ChangeLoc()<CR>o
 nmap Ф :call ChangeLoc()<CR>A
 nmap Ш :call ChangeLoc()<CR>I
 nmap Ц :call ChangeLoc()<CR>W
@@ -343,7 +361,13 @@ command! I !google-chrome --allow-file-access-from-files --allow-file-access ind
 nnoremap <space>f ofor (size_t i = 0; i < N; ++i)FNs
 nnoremap co ocout << N << endl;FNs
 " common JS funcs
+function! LoggingJsCpp()
+  if match(expand("%"),'\.js') > 0
+    normal aconsole.log(\"\");hhi
+  endif
+endfunc
 inoremap <c-g> console.log("");hhi
+" inoremap <c-g> <C-o>:call LoggingJsCpp()<CR>
 inoremap <c-f> function 
 " jquery
 inoremap <c-d> $("<div></div>")
@@ -355,3 +379,6 @@ imap <c-q> $("#");<Esc>hhi
 nmap <Space>a :tab split<CR>:Ack ""<Left>
 nmap <Space>A :tab split<CR>:Ack <C-r><C-w><CR>
 nmap <Space>c :cclose<CR>:tabc<CR>
+
+"build
+nmap <Space>b :wa<CR>:!cd build && clear && cmake --build . -- -j4<CR>
