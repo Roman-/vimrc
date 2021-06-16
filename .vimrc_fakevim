@@ -19,13 +19,9 @@ nmap yh vhy
 " vim niceties
 map <c-u> <Nop>
 
-"{{{escaping to the normal mode with Tab.
-" See there why this takes place: http://vim.wikia.com/wiki/Avoid_the_escape_key
-vnoremap <tab> <esc>
-inoremap <tab> <esc>
-inoremap <S-tab> <space><space><space><space>
-nmap <tab> :noh<Enter><c-G>
-nnoremap r<tab> <nop>
+"{{{ My Esc button is swapped with the CAPS LOCK btn on the OS level. Reasoning: http://vim.wikia.com/wiki/Avoid_the_escape_key
+nnoremap <space><esc> :noh<Enter>:echom ""<Enter>
+nnoremap <tab> :noh<Enter>:echom "Use your CAPS LOCK btn"<Enter>
 "}}}
 
 

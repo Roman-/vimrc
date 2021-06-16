@@ -1,17 +1,16 @@
 autocmd BufWinLeave *.* mkview
-autocmd BufWinEnter *.* silent loadview
+autocmd BufWinEnter *.* silent! loadview
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-:source /home/lo/.vim/autoload/matchit.vim
+set viewoptions-=options
 set relativenumber
 set number
 syntax on
 autocmd BufNewFile,BufRead * if expand('%:t') !~ '\.' | endif
 set nocompatible
 
-set cursorline
-hi CursorLine cterm=NONE ctermbg=234 guibg=234
+" set cursorline
+hi CursorLine cterm=NONE ctermbg=234
 hi CursorLineNr cterm=bold ctermfg=226
-hi Folded ctermbg=234 ctermfg=94
 hi Comment ctermfg=14
 hi cTodo ctermbg=236
 hi Search ctermfg=0 ctermbg=154
@@ -50,10 +49,10 @@ set shiftwidth=4 tabstop=4 smarttab expandtab
 set path=.,,
 set path+=**
 set tags=./tags,tags;$HOME
-set wildignore+=**/_deps/** 
+set wildignore+=**/_deps/**
 
 function! MakeTags()
-    silent exec "!ctags -R --exclude=*.min.js --exclude=jspdf --exclude=alias --exclude=build ."
+    silent exec "!ctags -R --exclude=*.min.js --exclude=build ."
     redraw!
     echom 'Tags made     >^.^<   '
 endfun
@@ -70,15 +69,9 @@ nmap yl vly
 nmap yh vhy
 nmap <c-g> :echom expand('%:p')<Enter>
 
-" vim niceties
-
-"{{{escaping to the normal mode with Tab.
-" See there why this takes place: http://vim.wikia.com/wiki/Avoid_the_escape_key
-vnoremap <tab> <esc>
-inoremap <tab> <esc>
-inoremap <S-tab> <space><space><space><space>
-nnoremap <tab> :noh<Enter>:echom ""<Enter>
-nnoremap r<tab> <nop>
+"{{{ My Esc button is swapped with the CAPS LOCK btn on the OS level. Reasoning: http://vim.wikia.com/wiki/Avoid_the_escape_key
+nnoremap <space><esc> :noh<Enter>:echom ""<Enter>
+nnoremap <tab> :noh<Enter>:echom "Use your CAPS LOCK btn"<Enter>
 "}}}
 
 " positioning
@@ -98,7 +91,7 @@ noremap L 15l
 noremap <c-h> 5h
 noremap <c-l> 5l
 noremap <space>h ^
-noremap <space>H o145a_77hR
+noremap <space>H o<Esc>145a_<Esc>77hR
 noremap <space>l $
 " J used to be for join - gj
 nnoremap zj mz:join<Enter>`z
@@ -178,7 +171,6 @@ function! CloseBuffer()
     endif
 endfunction
 
-" for multiple buffers
 function! SaveAndCloseBuffer()
     if (&mod == 1)
         write
@@ -186,7 +178,6 @@ function! SaveAndCloseBuffer()
     :call CloseBuffer()
 endfunction
 
-" for multiple buffers
 function! DiscardAndQuit()
     if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
         quit!
@@ -220,7 +211,7 @@ let g:airline_section_x=''
 
 "}}}
 "{{{ vundle
-filetype off                  " required
+filetype off                  " required (vundle)
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -229,17 +220,17 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+" The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
 " plugin on GitHub repo
 Plugin 'vim-airline/vim-airline'
 Plugin 'https://github.com/lyokha/vim-xkbswitch'
 Plugin 'mileszs/ack.vim'
-Plugin 'https://github.com/preservim/nerdtree'
 Plugin 'octol/vim-cpp-enhanced-highlight'
 
  "All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
+call vundle#end()            " required (vundle)
+filetype plugin indent on    " required (vundle)
 "}}}
 
 " Qt-ish ctrl+k to navigate
@@ -289,14 +280,15 @@ endfun
 map <c-y> :call Mosh_Flip_Ext()<CR>
 
 function! ChangeLoc()
-    silent exec "!xdotool keyup Alt_L Space && xdotool key alt+space"
+    silent exec "!xdotool keyup Alt_L && xdotool key alt+space"
     redraw!
     echom 'keyboard layout changed'
 endfun
 
 " xkbswitch {{{
-let g:XkbSwitchEnabled = 1
+let g:XkbSwitchLib = "/usr/local/lib/libg3kbswitch.so"
 let g:XkbSwitchIMappings = ['ru']
+let g:XkbSwitchEnabled = 1
 
 nmap о :call ChangeLoc()<CR>j
 nmap л :call ChangeLoc()<CR>k
@@ -358,16 +350,10 @@ command! I !google-chrome --allow-file-access-from-files --allow-file-access ind
 "shortcuts for coding
 
 " insert "for" construction
-nnoremap <space>f ofor (size_t i = 0; i < N; ++i)FNs
-nnoremap co ocout << N << endl;FNs
+nnoremap <space>f ofor (size_t i = 0; i < N; ++i)<Esc>FNs
+nnoremap co ocout << N << endl;<Esc>FNs
 " common JS funcs
-function! LoggingJsCpp()
-  if match(expand("%"),'\.js') > 0
-    normal aconsole.log(\"\");hhi
-  endif
-endfunc
-inoremap <c-g> console.log("");hhi
-" inoremap <c-g> <C-o>:call LoggingJsCpp()<CR>
+inoremap <c-g> console.log("");<Esc>hhi
 inoremap <c-f> function 
 " jquery
 inoremap <c-d> $("<div></div>")
