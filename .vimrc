@@ -1,3 +1,4 @@
+source /home/lo/.vimrc_rus_maps
 autocmd BufWinLeave *.* mkview
 autocmd BufWinEnter *.* silent! loadview
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
@@ -224,7 +225,6 @@ Plugin 'VundleVim/Vundle.vim'
 " Keep Plugin commands between vundle#begin/end.
 " plugin on GitHub repo
 Plugin 'vim-airline/vim-airline'
-Plugin 'https://github.com/lyokha/vim-xkbswitch'
 Plugin 'mileszs/ack.vim'
 Plugin 'octol/vim-cpp-enhanced-highlight'
 
@@ -278,31 +278,6 @@ function! Mosh_Flip_Ext()
 endfun
 
 map <c-y> :call Mosh_Flip_Ext()<CR>
-
-function! ChangeLoc()
-    silent exec "!xdotool keyup Alt_L && xdotool key alt+space"
-    redraw!
-    echom 'keyboard layout changed'
-endfun
-
-" xkbswitch {{{
-let g:XkbSwitchLib = "/usr/local/lib/libg3kbswitch.so"
-let g:XkbSwitchIMappings = ['ru']
-let g:XkbSwitchEnabled = 1
-
-nmap о :call ChangeLoc()<CR>j
-nmap л :call ChangeLoc()<CR>k
-nmap О :call ChangeLoc()<CR>J
-nmap Л :call ChangeLoc()<CR>K
-nmap ф :call ChangeLoc()<CR>a
-nmap ш :call ChangeLoc()<CR>i
-nmap щ :call ChangeLoc()<CR>o
-nmap Ф :call ChangeLoc()<CR>A
-nmap Ш :call ChangeLoc()<CR>I
-nmap Ц :call ChangeLoc()<CR>W
-nmap а <c-f>
-nmap в <c-f>
-"}}}
 
 " tests l
 set list
