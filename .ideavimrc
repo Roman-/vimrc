@@ -1,6 +1,6 @@
 "" Source my .vimrc (no plugins)
-source .vimrc_fakevim
-source .vimrc_rus_maps
+source ~/.vimrc_fakevim
+source ~/.vimrc_rus_maps
 
 " Idea autocompletes certain things and the behavior is different than in
 " normal VIM as a result
