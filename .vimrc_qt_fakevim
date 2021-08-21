@@ -1,0 +1,16 @@
+" .vimrc for Qt Creator FakeVim:
+
+" <C-j> for executing Run command but enter "PASSING" mode inb4
+source /home/lo/.vimrc_common_noplugin
+source /home/lo/.vimrc_rus_maps
+
+" Qt creator:  <C-j> for executing Run command but enter "PASSING" mode inb4
+nnoremap <C-j> ,<C-j>
+
+inoremap <c-g> LOG(INFO) << "";<Esc>hi
+" TODO which 
+cmap <C-v> <C-r>0
+
+" QT Fakevim specific
+" insert "for" construction
+nnoremap <space>f ofor (size_t i = 0; i < N; ++i)<Esc>FNs

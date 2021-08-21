@@ -1,13 +1,12 @@
+" .vimrc for terminal vim
 source /home/lo/.vimrc_rus_maps
+source /home/lo/.vimrc_common_noplugin
 autocmd BufWinLeave *.* mkview
 autocmd BufWinEnter *.* silent! loadview
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 set viewoptions-=options
-set relativenumber
-set number
 syntax on
 autocmd BufNewFile,BufRead * if expand('%:t') !~ '\.' | endif
-set nocompatible
 
 " set cursorline
 hi CursorLine cterm=NONE ctermbg=234
@@ -40,13 +39,6 @@ hi cCharacter ctermfg=9
 hi cType ctermfg=154
 hi cppType ctermfg=154
 
-set ignorecase
-set incsearch
-set hlsearch
-
-set smartindent
-set shiftwidth=4 tabstop=4 smarttab expandtab
-
 set path=.,,
 set path+=**
 set tags=./tags,tags;$HOME
@@ -59,15 +51,8 @@ function! MakeTags()
 endfun
 nmap T :call MakeTags()<CR>
 
-set clipboard^=unnamed,unnamedplus
 
-" shoudn't it be by default?
-nmap dl vld
-nmap dh vhd
-nmap cl vlc
-nmap ch vhc
-nmap yl vly
-nmap yh vhy
+" terminal-vim specific
 nmap <c-g> :echom expand('%:p')<Enter>
 
 "{{{ My Esc button is swapped with the CAPS LOCK btn on the OS level. Reasoning: http://vim.wikia.com/wiki/Avoid_the_escape_key
@@ -75,55 +60,6 @@ nnoremap <space><esc> :noh<Enter>:echom ""<Enter>
 nnoremap <tab> :noh<Enter>:echom "Use your CAPS LOCK btn"<Enter>
 "}}}
 
-" positioning
-nmap <space> <nop>
-noremap <space>u zbkj
-noremap <space>d ztkj
-noremap <space><space> zz
-
-" u for undo, U for redo
-nnoremap U <C-r>
-
-"{{{hjkl navigation
-noremap J 5j
-noremap K 5k
-noremap H 15h
-noremap L 15l
-noremap <c-h> 5h
-noremap <c-l> 5l
-noremap <space>h ^
-noremap <space>H o<Esc>145a_<Esc>77hR
-noremap <space>l $
-" J used to be for join - gj
-nnoremap zj mz:join<Enter>`z
-inoremap <c-BS> <c-w>
-"}}}
-"{{{ making habitual hotkeys work in vim
-nnoremap <C-a> ggVG
-nnoremap <space>s :w<Enter>
-nnoremap <space>S :wa<Enter>
-"}}}
-"{{{ copy / paste
-
-" enter special symbols with control-C
-inoremap <C-c> <C-v>
-
-" paste: <C-V> always puts things that were YANKED, not deleted;
-inoremap <C-v> <C-r>0
-nnoremap <C-v> i<C-r>0
-" non of these works. I guess what I should do is change behavior when paste over selected
-" nnoremap p a<C-r>0
-" vnoremap p "0p
-
-" change-in-word is a very common action; use q for it
-nnoremap q ciw
-nnoremap Q daw
-vnoremap q c
-nnoremap <space>w ciw<C-r>0
-nnoremap <space>q mXyiw`X
-" ...and space-m for macro
-nnoremap <space>m q
-"}}}
 "{{{ cpp- and js-related
 " space + ; = append ';' to the end of the line
 nnoremap <space>; msA;`s
@@ -166,6 +102,7 @@ function! CloseBuffer()
         return -1
     endif
     if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
+        bd
         quit
     else
         bd
@@ -181,7 +118,8 @@ endfunction
 
 function! DiscardAndQuit()
     if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
-        quit!
+        bd!
+        quit
     else
         bd!
     endif
@@ -311,13 +249,6 @@ function! <SID>SynStack()
   endif
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
-
-"surround selected with quotes or something
-nmap z<Space> i <Esc>la <Esc>h
-vmap z<Space> "tdi t <Esc>
-vmap z" "tdi"t"<Esc>
-vmap z' "tdi't'<Esc>
-vmap z< "tdi<t><Esc>
 
 " web: launch chrome
 command! I !google-chrome --allow-file-access-from-files --allow-file-access index.html
