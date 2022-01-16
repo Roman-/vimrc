@@ -8,7 +8,42 @@ set viewoptions-=options
 syntax on
 autocmd BufNewFile,BufRead * if expand('%:t') !~ '\.' | endif
 
+noremap ) :bn<CR>
+noremap ( :bp<CR>
+" noremap ] :bn<CR>
+" noremap [ :bp<CR>
+" ...and to avoid delays, unmap brackets when entering buffers
+augroup unmap_brackets
+autocmd!
+    autocmd BufWinEnter,BufNewFile * call UnmapBrackets()
+augroup END
+
+function! UnmapBrackets()
+    silent! unmap <buffer> [[
+    silent! unmap <buffer> ["
+    silent! unmap <buffer> []
+    silent! unmap <buffer> ][
+    silent! unmap <buffer> ]"
+    silent! unmap <buffer> ]]
+endfun
+
+"test https://stackoverflow.com/questions/9458294/open-url-under-cursor-in-vim-with-browser
+function! HandleURL()
+  let s:uri = matchstr(getline("."), 'https\?:\/\/[^ >,;]*')
+  echo s:uri
+  if s:uri != ""
+    silent exec "!google-chrome \"".s:uri."\" &> /dev/null"
+    exec "redraw!"
+  else
+    norm! gf
+    " echo 'No URI found in line.'
+  endif
+endfunction
+nnoremap gf :call HandleURL()<cr>
+
+
 " set cursorline
+"hi Normal ctermfg=white ctermbg=black
 hi CursorLine cterm=NONE ctermbg=234
 hi CursorLineNr cterm=bold ctermfg=226
 hi Comment ctermfg=14
@@ -90,11 +125,8 @@ nnoremap <space>C diwiconst pa&
 nmap <space>] mt"lyy?class <CR>w"cyiw`t<c-y>Go<c-r>lk^f(bi<C-r>c:::s:^\s*:<CR>:noh<CR>$s {<CR>}O
 " add braces
 "}}}
-"{{{ working with buffers
-noremap <space>k :bn<CR>
-noremap <space>j :bp<CR>
-" this opens just closed tab just like in web browser
-map <c-s-t> <c-o>
+" C-S-t opens recently closed tab in browser; however, we should enforce good habits
+nnoremap <c-s-t> :echom "use c-o to open recently closed tab"<Enter>
 set hidden " allow to switch tabs when buffer is modified
 function! CloseBuffer()
     if (&mod == 1)
@@ -174,7 +206,6 @@ filetype plugin indent on    " required (vundle)
 " Qt-ish ctrl+k to navigate
 nmap <c-k> :find 
 
-" TODO deal with .c and .cpp
 function! Mosh_Flip_Ext()
   " Switch editing between .c* and .h* files (and more).
   " Since .h file can be in a different dir, call find.
@@ -217,6 +248,26 @@ endfun
 
 map <c-y> :call Mosh_Flip_Ext()<CR>
 
+" insert log("") like depending on file extention
+function! Insert_Log()
+  " Switch editing between .c* and .h* files (and more).
+  " Since .h file can be in a different dir, call find.
+  let l:filename = expand("%")
+  if match(l:filename,'\.cpp') > 0 || match(l:filename,'\.c') > 0 || match(l:filename,'\.h') > 0
+      exe "normal! iLOG_DEBUG(\"\");\<esc>hi"
+  elseif match(l:filename,'\.js') > 0
+      exe "normal! iconsole.log(\"\");\<esc>hi"
+  elseif match(l:filename,'\.php') > 0
+      exe "normal! iLOG_INFO(\"\");\<esc>hi"
+  elseif match(l:filename,'\.java') > 0
+      exe "normal! iLog.d(\"\");\<esc>hi"
+  else
+      exe "normal! iLOG(\"\");\<esc>hi"
+  endif
+endfun
+
+imap <c-g> <C-o>:call Insert_Log()<CR>
+
 " tests l
 set list
 set listchars=tab:›\ ,trail:•,extends:#,nbsp:. " Highlight problematic whitespace
@@ -231,6 +282,7 @@ nmap z- o-
 nmap zO O[ ] 
 nmap zm mz0lF[lrx<Esc>`z
 nmap zu mz0lF[lr <Esc>`z
+nmap <space>H o<Esc>141a_<Esc>75hR
 
 "inoremap  
 "set cpt=.
@@ -240,7 +292,6 @@ let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 " Ack
 let g:ackprg = 'ag --vimgrep'
-" noremap <esc> :cclose<Enter>:echom ""<Enter>
 "tests
 nmap <C-S-P> :call <SID>SynStack()<CR>
 function! <SID>SynStack()
@@ -257,10 +308,7 @@ command! I !google-chrome --allow-file-access-from-files --allow-file-access ind
 
 " insert "for" construction
 nnoremap <space>f ofor (size_t i = 0; i < N; ++i)<Esc>FNs
-nnoremap co ocout << N << endl;<Esc>FNs
-" common JS funcs
-inoremap <c-g> console.log("");<Esc>hhi
-inoremap <c-f> function 
+nnoremap co ostd::cout << N << std::endl;<Esc>FNs
 " jquery
 inoremap <c-d> $("<div></div>")
 inoremap <c-b> $("<button class='btn btn-primary'></button>")

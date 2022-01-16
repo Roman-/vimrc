@@ -21,10 +21,6 @@ map щ o
 map Щ O
 map з p
 map З P
-map х [
-map Х {
-map ъ ]
-map Ъ }
 map ф a
 map Ф A
 map ы s
@@ -145,6 +141,12 @@ nmap нфБ ya<
 
 " mappings with leader
 
+" mappings for leader g
+map пп gg
+map па gf
+map пв gd
+map пш gi
+
 " mappings for leader <space>
 map <space>й <space>q
 map <space>ц <space>w
@@ -159,6 +161,7 @@ map <space>ы <space>s
 map <space>в <space>d
 map <space>а <space>f
 map <space>р <space>h
+map <space>Р <space>H
 map <space>о <space>j
 map <space>л <space>k
 map <space>д <space>l
@@ -176,21 +179,16 @@ map яо zj
 map я- z-
 map я<space> z<space>
 
-" mappings for leader g
-map пп gg
-map па gf
-map пв gd
-map пш gi
-
 " other mappings (added manually)
 map ЯЙ ZQ
+map ЯЯ ZZ
 map ЮЮ >>
 map ББ <<
-map вд dl
-map вр dh
-map во dj
-map вл dk
-map сд cl
-map ср ch
-map со cj
-map сл ck
+nmap вд dl
+nmap вр dh
+nmap во dj
+nmap вл dk
+nmap сд cl
+nmap ср ch
+nmap со cj
+nmap сл ck

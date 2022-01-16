@@ -5,8 +5,8 @@ set nocompatible
 set ignorecase
 set incsearch
 set hlsearch
-set smartindent
-set shiftwidth=4 tabstop=4 smarttab expandtab
+filetype plugin indent on
+set shiftwidth=4 tabstop=4 shiftwidth=4 smarttab expandtab
 set clipboard^=unnamed,unnamedplus
 
 " shouldn't it be by default?
@@ -17,11 +17,9 @@ nmap ch vhc
 nmap yl vly
 nmap yh vhy
 
-" vim niceties
-" map <c-u> <Nop>
-
 "{{{ My Esc button is swapped with the CAPS LOCK btn on the OS level. Reasoning: http://vim.wikia.com/wiki/Avoid_the_escape_key
 nnoremap <space><esc> :noh<Enter>
+" nnoremap <esc> :noh<Enter> " this enters vim in replace mode wtf
 nnoremap <tab> :noh<Enter>
 "}}}
 
@@ -34,6 +32,12 @@ noremap <space><space> zz
 
 " u for undo, U for redo
 nnoremap U <C-r>
+" D to delete the entire line, d<Home>/<End> to delete till start/end
+nnoremap D dd
+" Enter to insert a new line but stay in normal mode
+nnoremap <Return> o<Esc>
+nnoremap <S-Return> O<Esc>
+
 
 "{{{hjkl navigation
 noremap J 5j
@@ -48,8 +52,18 @@ noremap <space>l $
 nnoremap zj mz:join<Enter>`z
 nnoremap <space>m q
 "}}}
+
+" navigating between tabs (aka buffers) with []
+noremap ) :bn<CR>
+noremap ( :bp<CR>
+
+set viewoptions-=options
+syntax on
+autocmd BufNewFile,BufRead * if expand('%:t') !~ '\.' | endif
 "{{{ making habitual hotkeys work in vim
 nnoremap <C-a> ggVG
+" some editors do support this
+inoremap <C-BS> <c-w>
 " ctrl+d = signal eof = quit
 nnoremap <C-d> :q<Enter>
 nnoremap <space>s :w<Enter>
@@ -67,16 +81,14 @@ inoremap <C-c> <C-v>
 inoremap <C-v> <C-r>0
 cnoremap <C-v> <C-r>0
 nnoremap <C-v> i<C-r>0<Esc>
-" non of these works. I guess what I should do is change behavior when paste over selected
-" nnoremap p a<C-r>0
-" vnoremap p "0p
 " change-in-word is an extremely common action; use q for it
 nnoremap q ciw
 nnoremap Q daw
 vnoremap q c
 nnoremap <space>w ciw<C-r>0
+" change-after-equal-sign
+nnoremap c= ^f=wC
 nnoremap <space>q mXyiw`X
-
 
 
 "}}}
@@ -84,8 +96,8 @@ nnoremap <space>q mXyiw`X
 " space + ; = append ';' to the end of the line
 nnoremap <space>; msA;`s
 " space + / = comment the current line
-vnoremap <space>/ ms:s/^/\/\//g<Enter>`s:noh<Enter>
 nnoremap <space>/ mtI//<Esc>`t
+vnoremap <space>/ ms:s/^/\/\//g<Enter>`s:noh<Enter>
 " duplicate current line and comment it for fast change
 nnoremap <space>y yymoPI// `o
 " when the cursor is on the word, add #include directive with that word on space + i
@@ -104,7 +116,14 @@ nnoremap <S-w> :wq<Enter>
 " go from function declaration to definition: copy line, mark position, copy
 " nmap <space>] mt"lyy?class <Enter>w"cyiw`t<c-y>Go<c-r>lk^f(bi<C-r>c:::s:^\s*:<Enter>:noh<Enter>$s {<Enter>}O
 " nmap <space>] yy<c-y>Gp
-"
+
+" Mapping Ctrl-Backspace does not work in terminal Vim. Following is a workaround.
+imap <C-w> <Nop>
+noremap! <C-BS> <C-w>
+noremap! <C-h> <C-w>
+
+" TODO depending on file extention
+inoremap <c-f> function 
 
 "surround selected with quotes or spaces
 nmap z<Space> i <Esc>la <Esc>h
