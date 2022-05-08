@@ -40,9 +40,9 @@ map Л K
 map д l
 map Д L
 map ж ;
-map Ж :
-map э '
-map Э "
+map Ж ¢
+map э -
+map Э –
 map я z
 map Я Z
 map ч x
@@ -99,7 +99,7 @@ nmap сфЭ ca"
 nmap вфЭ da"
 nmap нфЭ ya"
 vmap шэ i'
-nmap сшэ ci'
+nmap сшэ ci-
 nmap вшэ di'
 nmap ншэ yi'
 vmap фэ a'
@@ -144,6 +144,7 @@ nmap нфБ ya<
 " mappings for leader g
 map пп gg
 map па gf
+map пы gs
 map пв gd
 map пш gi
 
@@ -173,11 +174,40 @@ map <space>ь <space>m
 map <space>ю <space>.
 
 " mappings for leader z
+map яш zi
 map ящ zo
 map яЩ zO
 map яо zj
 map я- z-
 map я<space> z<space>
+map ят zn
+map яы zs
+map яв zd
+map яю z.
+map яб z,
+
+" yank
+nmap нд yl
+nmap ны ys
+map нз yp
+map нв yd
+map нт yn
+map нфу yae
+map ншу yie
+
+" delete
+nmap вы ds
+nmap вц dw
+nmap вй dq
+
+" with-register
+map р h
+map ры hs
+
+" go
+map пф ga
+map пщ go
+nmap пы gs
 
 " other mappings (added manually)
 map ЯЙ ZQ
@@ -192,3 +222,10 @@ nmap сд cl
 nmap ср ch
 nmap со cj
 nmap сл ck
+map <space>щ <space>o
+map <space>Щ <space>O
+map <space>з <space>p
+map <space>З <space>P
+
+" doesn't work anyway
+map <c-ц> <c-w>
