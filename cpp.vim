@@ -45,9 +45,6 @@ endfun
 
 map <c-y> :call Mosh_Flip_Ext()<CR>
 
-" nnoremap <space>f afor (size_t i = 0; i < N; ++i)<esc>FNs
-nnoremap co ocout << N << endl;FNs
-
 " insert extended if-else construction with brackets
 nnoremap <space>e aif (N)o{o}oelseo{o}?N<Enter>s
 " space-[ for opening braces
@@ -55,29 +52,7 @@ nnoremap <space>[ A {o}O
 " replace 'Abc' with 'const Abc&'
 nnoremap <space>c diwiconst pa&
 
-" insert log("") like depending on file extention
-function! Insert_Log()
-  " Switch editing between .c* and .h* files (and more).
-  " Since .h file can be in a different dir, call find.
-  let l:filename = expand("%")
-  if match(l:filename,'\.cpp') > 0 || match(l:filename,'\.c') > 0 || match(l:filename,'\.h') > 0
-      exe "normal! iLOG_DEBUG(\"\");\<esc>hi"
-  elseif match(l:filename,'\.js') > 0
-      exe "normal! iconsole.log(\"\");\<esc>hi"
-  elseif match(l:filename,'\.php') > 0
-      exe "normal! iLOG_INFO(\"\");\<esc>hi"
-  elseif match(l:filename,'\.java') > 0
-      exe "normal! iLog.d(\"\");\<esc>hi"
-  else
-      exe "normal! iLOG(\"\");\<esc>hi"
-  endif
-endfun
-imap <c-g> <C-o>:call Insert_Log()<CR>
-
 "{{{ cpp- and js-related
-" space + ; = append ';' to the end of the line
-nnoremap <space>; msA;`s
-nnoremap <space>. msA.`s
 " space + / = comment current line
 " map <C-/> :s:^\/\/<CR>
 " nnoremap <C-/>/ msI// `sll

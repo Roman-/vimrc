@@ -15,7 +15,6 @@ inoremap <c-o> <c-x><c-o>
 
 nnoremap <silent> <S-Tab> :VimwikiPrevLink<cr>
 nnoremap <silent> <Tab> :VimwikiNextLink<cr>
-nnoremap zd :w<cr>:call TrashCurrentNote()<cr>
 nnoremap zr :w<cr>:VimwikiRenameFile<cr>y<cr>
 nnoremap zs :VimwikiGoto scratch<cr>ggVG"_s
 nnoremap zn :VimwikiGoto 
@@ -36,6 +35,7 @@ nnoremap zy :VimwikiMakeYesterdayDiaryNote<cr>
 
 nmap zb :DisplayBacklinks<cr>
 nnoremap zc o```cpp<cr><cr>```<up>
+nnoremap zz o```<cr>```<up>
 
 " use ripgrep to find backlinks for current note
 function! GrepBacklinks(query, fullscreen)
@@ -63,22 +63,3 @@ function DeleteHiddenBuffers()
     endfor
 endfunction
 
-" Move current file to trash
-function TrashCurrentNote()
-  w
-  let val = input('Move "'.expand('%').' to trash? " [y]es/[N]o? ')
-  if val !~? '^y'
-    return
-  endif
-  let fname = expand('%:p')
-
-  sav! /tmp/deleted_note.md
-  "!rm #
-  call delete(fname)
-  "silent execute '!rm #'
-  silent execute 'bwipeout' fname
-  silent execute 'bd'
-
-  " silent execute 'bwipeout'
-  echomsg 'note moved to /tmp/deleted_note.md'
-endfunction

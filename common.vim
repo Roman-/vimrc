@@ -1,18 +1,24 @@
 " common .vimrc to be included in all .vimrcs (Terminal Vim, Qt Fakevim, IdeaVIM)
 filetype plugin indent on
 syntax on
-set relativenumber
+" line numbers on the left
 set number
+set relativenumber
 set nocompatible
 set ignorecase
 set incsearch
 set hlsearch
 set shiftwidth=4 tabstop=4 shiftwidth=4 smarttab expandtab
+" insert from system clipboard
 set clipboard^=unnamed,unnamedplus
 set viewoptions-=options
 set cpoptions+=n
+" cursor line and column -> sniper scope
 set cursorline
 set cursorcolumn
+set copyindent
+" never enable foldings
+set nofoldenable
 
 " My Esc button is swapped with the CAPS LOCK btn on the OS level. Reasoning: http://vim.wikia.com/wiki/Avoid_the_escape_key
 nnoremap <space><esc> :noh<cr>
@@ -64,6 +70,7 @@ imap <C-w> <Nop>
 noremap! <C-BS> <C-w>
 noremap! <C-h> <C-w>
 
+" random key mappings go there
 " escape to normal mode and then switch tabs
 imap <c-PageDown> <esc><c-PageDown>
 imap <c-PageUp> <esc><c-PageUp>
@@ -80,47 +87,32 @@ nnoremap zj mz:join<Enter>`z
 " m for macro
 nnoremap <space>m q
 " enter block visual mode with vv
-vnoremap v <c-v>
-noremap go <c-o>
+xnoremap v <c-v>
 " copy
-vnoremap <C-c> y
+xnoremap <C-c> y
 " enter special symbols with control-C
 inoremap <C-c> <C-v>
 inoremap <C-v> <C-r>+
 cnoremap <C-v> <C-r>+
-
 " paste-below-newline, paste-above
-nnoremap <c-v> o<C-r>+<esc>
-nnoremap <space>p o<C-r>+<esc>
-nnoremap <space>P O<C-r>+<esc>
+" this doesn't work?
+" nnoremap <silent> <c-v> o<C-r>+<esc>
+nnoremap <silent> <space>p :set paste<cr>o<C-r>+<esc>:set nopaste<cr>
+nnoremap <silent> <space>P :set paste<cr>O<C-r>+<esc>:set nopaste<cr>
 nnoremap <space>s :w<Enter>
 nnoremap <space>S :wa<Enter>
-" change-after-equal-sign
-nnoremap c= ^f=wC
-" change-comment
-nnoremap c/ $F/wC
-" change-hash-comment (or header)
-nnoremap c# $F#wC
-" change list item / header (anything starting with 2nd word in soft line)
-nnoremap c- ^WC
-" change-in-word is an extremely common action; use q for it
+
 nnoremap Q ciW
 nnoremap q ciw
 
-" avoud repeatitive keypress
+" avoid repeatitive keypress
 noremap ga gg
 nnoremap gs <c-]>
+noremap go <c-o>
+noremap g- ^W
 " duplicate line but preserve cursor position and the clipboard
 nnoremap <space>y mX"9yy"9p`Xj
 nnoremap <space>Y mX"9yy"9P`Xk
-" copy the comment
-nnoremap y/ mX$2F/wyg_`X
-" copy the hash comment or header
-nnoremap y# mX$F#wyg_`X
-" copy list item / header (anything starting with 2nd word in soft line)
-nnoremap y- mX^Wyg_`X
-" remove the comment
-nnoremap d/ mX$2F/gel"9D`X
 
 " habit-breakers
 nmap A <nop>
@@ -138,16 +130,16 @@ nnoremap <space>. mXA.<Esc>`X
 nnoremap <space>/ A // 
 " ctrl + / = comment current line. Override in IDEs
 nnoremap <c-/> mXI// <Esc>`X
-vnoremap <c-/> mX:s/^/\/\/ /g<Enter>`X:noh<Enter>
+xnoremap <c-/> mX:s/^/\/\/ /g<Enter>`X:noh<Enter>
 " duplicate current line and comment it for fast change - TODO
 nnoremap <C-w> :q<cr>
 
 " surround selected with quotes or spaces TODO combine better with vim-surround plugin
 nmap z<Space> i <Esc>;a <Esc>h
-vmap z<Space> "tdi t <Esc>
-vmap z" "tdi"t"<Esc>
-vmap z' "tdi't'<Esc>
-vmap z< "tdi<t><Esc>
+xmap z<Space> "tdi t <Esc>
+xmap z" "tdi"t"<Esc>
+xmap z' "tdi't'<Esc>
+xmap z< "tdi<t><Esc>
 
 nnoremap < <<
 nnoremap > >>
@@ -167,23 +159,63 @@ nnoremap '<Delete> :delmarks!<cr>
 noremap - ;
 noremap – ,
 
-"              yanking
-" yank soft line (without newline)
-nnoremap yh mX^vg_y`X
+" The following 4 blocks simulates custom text objects: #, -, /, =
+
+" yank/copy
 " yank line (with newline) - avoid double-tapping yy
 nnoremap ys yy
-" yank path = copy current filename to clipboard
+" yank soft line (without newline)
+nnoremap yh mX^vg_y`X
+" yank path (copy current filename to clipboard)
 nnoremap yp :let @+=expand("%:p")<CR>:echom expand("%:p")<CR>
-" yank dir = copy current file directory to clipboard
+" yank dir (copy current file directory to clipboard)
 nnoremap yd :let @+=expand("%:p:h")<CR>:echom expand("%:p:h")<CR>
 " yank filename without extension
 nnoremap yn :let @+=expand("%:t:r")<CR>:echom expand("%:t:r")<CR>
-" copy to the end of the line
+" yank to the end of the line
 nnoremap Y yg_
+" yank the comment
+nnoremap y/ mX$2F/wyg_`X
+" yank the hash comment or header
+nnoremap y# mX$F#wyg_`X
+" yank list item/header, i.e. anything that starts with 2nd word in soft line
+nnoremap y- mX^Wyg_`X
+" yank right side of the assignment
+nnoremap y= mX^f=wy$`X
 
-" replace-with-register
-map h gr
-nmap hs grr
+" replace-with-register but preserve the cursor position
+nmap h gr
+xmap h gr
+nmap hs mXgrr`X
+nmap hh mX^gr$`X
+nmap h- mX^Wgr$`X
+nmap h# mX$F#wgr$`X
+nmap h= mX^f=wgr$`X
+nmap h/ mX$F/wgr$`X
+
+" delete but preserve the cursor position
+" ds to delete the line (avoid repetitive keypresses)
+nnoremap ds mXdd`X
+" delete line, but only keep 'soft line' in register
+nnoremap dh mX^vg_y"_dd`X
+nnoremap d/ mX$2F/gel"9D`X
+nnoremap d- mX^WD`X
+nnoremap d# mX$F#wD`X
+nnoremap d= mX^f=wD`X
+" a-la argument text object
+nnoremap d, F,dt,
+nnoremap d. das
+
+" change
+" change-after-equal-sign
+nnoremap c= ^f=wC
+" change-comment
+nnoremap c/ $F/wC
+" change-hash-comment (or header)
+nnoremap c# $F#wC
+" change list item / header (anything starting with 2nd word in soft line)
+nnoremap c- ^WC
+" change-in-word is an extremely common action; use q for it
 
 " better text objects
 onoremap ( i(
@@ -200,18 +232,14 @@ onoremap " i"
 onoremap ` i`
 onoremap w iw
 onoremap q iW
-vnoremap q iW
+xnoremap q iW
 " ... except when I delete word, I usually want to delete A word
 nnoremap dw daw
 nnoremap dq daW
 " ... and the Entire text object
 omap u ae
-vmap u ae
+xmap u ae
 nmap yu yie
-" ds to delete the line (avoid repetitive keypresses) and preserve cursor position
-nnoremap ds mXdd`X
-" delete line, but only keep 'soft line' in register
-nnoremap dh mX^vg_y"_dd`X
 " delete in blackhole
-vnoremap <c-x> "_d
+xnoremap <c-x> "_d
 nnoremap <c-x> "_diw

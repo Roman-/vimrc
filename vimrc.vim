@@ -23,12 +23,18 @@ Plugin 'sainnhe/sonokai'
 Plugin 'svban/YankAssassin.vim'
 Plugin 'kana/vim-textobj-user'
 Plugin 'kana/vim-textobj-entire'
+Plugin 'MarcWeber/vim-addon-mw-utils'
+Plugin 'tomtom/tlib_vim'
+Plugin 'garbas/vim-snipmate'
 "Plugin 'glacambre/firenvim'
 "Plugin 'easymotion/vim-easymotion'
 
  "All of your Plugins must be added before the following line
 call vundle#end()            " required (vundle)
 filetype plugin indent on    " required (vundle)
+
+" allows to close netrw TODO google for it
+let g:netrw_fastbrowse = 0
 
 if has('termguicolors')
     set termguicolors
@@ -44,8 +50,10 @@ source /home/lo/cloud/coding/configs/vim/qwerty/cyrillic.vim
 " surround
 let g:surround_no_mappings = 1
 
+" snipmate
+let g:snipMate = { 'snippet_version' : 1 }
+
 set path=.,,
-syntax on
 autocmd BufWinLeave,BufWrite ?* silent! mkview
 autocmd BufWinEnter ?* silent! loadview
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
@@ -127,6 +135,26 @@ function! DiscardAndQuit()
     endif
 endfunction
 
+" Delete current file to trash
+function MoveToTrash()
+  w
+  let val = input('Move "'.expand('%').' to trash? " [y]es/[N]o? ')
+  if val !~? '^y'
+    return
+  endif
+  let fname = expand('%:p')
+
+  sav! /tmp/deleted_buffer.txt
+  "!rm #
+  call delete(fname)
+  "silent execute '!rm #'
+  silent execute 'bwipeout' fname
+  silent execute 'bd'
+
+  " silent execute 'bwipeout'
+  echomsg 'note moved to /tmp/deleted_buffer.txt'
+endfunction
+
 " dealing with hard line breaks
 nnoremap <expr> k v:count ? 'j' : 'g<down>'
 nnoremap <expr> l v:count ? 'k' : 'g<up>'
@@ -141,6 +169,7 @@ noremap + :call SaveAndCloseBuffer()<Enter>
 " noremap <c-s-w> :call SaveAndCloseBuffer()<Enter>
 noremap z+ :silent! wa<cr>:qa!<cr>
 nnoremap zq :call DiscardAndQuit()<Enter>
+nnoremap zd :w<cr>:call MoveToTrash()<cr>
 
 if has('persistent_undo')
     set undofile
@@ -176,8 +205,9 @@ function! LastWindow()
   exe "find " . g:lastWinName
 endfunction
 " command -nargs=0 LastWindow call LastWindow()
-" C-S-t opens recently closed tab in browser; keeping consistent behavior
+" C-S-t opens recently closed tab in browser; keeping consistent behavior. Unfortunately, vim only processes it as c-t
 nnoremap <c-s-t> :call LastWindow()<cr>
+nnoremap <c-t> :call LastWindow()<cr>
 
 " Consistent shortcuts: (Idea/Clion, web browsers, file browsers have these for tab switch)
 " Those are remapped on BLUE+z/c on my keyboard
@@ -205,8 +235,9 @@ command! I !google-chrome --allow-file-access-from-files --allow-file-access ind
 command! -nargs=1 -complete=help H help <args> | silent only
 
 "shortcuts for coding (work-in-progress)
-inoremap <c-d> $("<div></div>")
-inoremap <c-b> $("<button class='btn btn-primary'></button>")
+inoremap <c-d> $("<div>")
+inoremap <c-b> $("<button class='btn btn-primary'>")
+inoremap <c-f> function 
 
 " fzf shortcuts
 nnoremap <space> <nop>
