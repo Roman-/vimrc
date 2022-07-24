@@ -99,11 +99,11 @@ nmap сфЭ ca"
 nmap вфЭ da"
 nmap нфЭ ya"
 xmap шэ i'
-nmap сшэ ci-
+nmap сшх ci-
 nmap вшэ di'
 nmap ншэ yi'
 xmap фэ a'
-nmap сфэ ca'
+nmap сфх ca'
 nmap вфэ da'
 nmap нфэ ya'
 xmap шё i`
@@ -185,6 +185,7 @@ map яы zs
 map яв zd
 map яю z.
 map яб z,
+map яц zw
 
 " yank
 nmap нд yl
@@ -209,6 +210,9 @@ map пф ga
 map пщ go
 nmap пы gs
 
+" doesn't work anyway
+map <c-ц> <c-w>
+
 " other mappings (added manually)
 map ЯЙ ZQ
 map ЯЯ ZZ
@@ -226,6 +230,10 @@ map <space>щ <space>o
 map <space>Щ <space>O
 map <space>з <space>p
 map <space>З <space>P
-
-" doesn't work anyway
-map <c-ц> <c-w>
+map сх c'
+map вх d'
+map нх y'
+map сэ c-
+map вэ d-
+map нэ y-
+map пэ g-

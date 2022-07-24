@@ -1,16 +1,12 @@
-" idea-ported plugins
+" idea-ported plugins: https://github.com/JetBrains/ideavim/wiki/Emulated-plugins
+" commands/actions: https://github.com/JetBrains/intellij-community/blob/master/platform/platform-resources-en/src/messages/ActionsBundle.properties
 Plug 'machakann/vim-highlightedyank'
 Plug 'vim-scripts/ReplaceWithRegister'
 Plug 'kana/vim-textobj-entire'
 Plug 'easymotion/vim-easymotion'
+Plug 'vim-scripts/argtextobj.vim'
 " Plug 'tpope/vim-surround'
 let g:highlightedyank_highlight_duration = "100"
-
-" easymotion
-let mapleader="M"
-set easymotion
-map M <Plug>(easymotion-prefix)
-map ' <Plug>(easymotion-w)
 
 noremap ¢ 15;
 
@@ -42,24 +38,44 @@ imap <c-g> console.log("
 
 " IDEA actions
 nmap yp <Action>(CopyAbsolutePath)
-" doesn't work??
-" nmap gs <Action>(LightEditGotoOpenedFile)
-nmap yc <Action>(CopyFileName)
+nmap yn <Action>(CopyFileName)
 nmap yd <Action>(CopyAbsolutePath)
+
 " this works, but kinda wanna edit configurations and make "build" cmd as well
 nmap <space>j <Action>(Run)
+nmap <c-s-j>  <Action>(Run)
 nmap <space>J <Action>(RunConfiguration)
+nmap £ <Action>(GotoAction)
+nmap <space>R <Action>(Refactorings.QuickListPopupAction)
+nmap <space>r <Action>(RenameElement)
+nmap zi <Action>(CloseAllEditorsButActive)
+nmap zw <Action>(CloseAllUnpinnedViews)
 
-nmap <c-s-j> <Action>(Run)
-nmap <gu> <Action>(VcsShowPrevChangeMarker)
-nmap <gm> <Action>(VcsShowNextChangeMarker)
+" navigation
+nmap go <Action>(Back)
+nmap gO <Action>(Forward)
+nmap gu <Action>(VcsShowPrevChangeMarker)
+nmap gm <Action>(VcsShowNextChangeMarker)
+nmap ge <Action>(GotoNextError)
+nmap gs <Action>(GotoDeclaration)
+nmap gS <Action>(QuickImplementations)
+nmap gh <Action>(GotoRelated)
+nmap gH <Action>(TypeHierarchy)
+" nmap <c-/> <Action>(CommentByLineComment)
+" xmap <c-/> <Action>(CommentByBlockComment)
 
 nmap <space>f <Action>(GotoFile)
 nmap <space>h <Action>(RecentFiles)
 nmap <space>a <Action>(FindInPath)
-nmap gs <Action>(GotoDeclaration)
+nmap <space>o <Action>($LRU)
+nmap <space>O <Action>(OpenFile)
 
-" imitate yank-assassin (yanking without moving cursor)
+" arg-text-object
+nmap d, daa
+nmap y, mXyia`X
+nmap c, cia
+
+" imitate yank-assassin (yanking without moving cursor) for text-objects
 nnoremap yw mXyiw`X
 nnoremap yq mXyiW`X
 nnoremap y( mXyi(`X

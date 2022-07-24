@@ -43,7 +43,7 @@ function! Mosh_Flip_Ext()
   endif
 endfun
 
-map <c-y> :call Mosh_Flip_Ext()<CR>
+map gh :call Mosh_Flip_Ext()<CR>
 
 " insert extended if-else construction with brackets
 nnoremap <space>e aif (N)o{o}oelseo{o}?N<Enter>s
@@ -72,4 +72,4 @@ nnoremap <space>[ A {o}O
 " replace 'Abc' with 'const Abc&'
 nnoremap <space>C diwiconst pa&
 " go from function declaration to definition: copy line, mark position, copy
-nmap <space>] mt"lyy?class <CR>w"cyiw`t<c-y>Go<c-r>lk^f(bi<C-r>c:::s:^\s*:<CR>:noh<CR>$s {<CR>}O
+nmap <space>] mt"lyy?class <CR>w"cyiw`t<c-k>Go<c-r>lk^f(bi<C-r>c:::s:^\s*:<CR>:noh<CR>$s {<CR>}O

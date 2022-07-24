@@ -26,12 +26,25 @@ Plugin 'kana/vim-textobj-entire'
 Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'tomtom/tlib_vim'
 Plugin 'garbas/vim-snipmate'
+Plugin 'neovim/nvim-lspconfig'
+Plugin 'AndrewRadev/sideways.vim'
+"Plugin 'karb94/neoscroll.nvim'
 "Plugin 'glacambre/firenvim'
-"Plugin 'easymotion/vim-easymotion'
+"Plugin 'easymotion/vim-easymotion' (hello, world)
 
  "All of your Plugins must be added before the following line
 call vundle#end()            " required (vundle)
 filetype plugin indent on    " required (vundle)
+
+let g:sonokai_style = 'maia'
+let g:sonokai_better_performance = 1
+let g:airline_theme = 'sonokai'
+
+" vimwiki-specific config
+if expand("%:p") == "/home/lo/cloud/notes/index.md"
+    source /home/lo/cloud/coding/configs/vim/qwerty/vimwiki.vim
+endif
+colorscheme sonokai
 
 " allows to close netrw TODO google for it
 let g:netrw_fastbrowse = 0
@@ -52,6 +65,7 @@ let g:surround_no_mappings = 1
 
 " snipmate
 let g:snipMate = { 'snippet_version' : 1 }
+let g:snips_author = 'Roman Strakhov'
 
 set path=.,,
 autocmd BufWinLeave,BufWrite ?* silent! mkview
@@ -158,8 +172,8 @@ endfunction
 " dealing with hard line breaks
 nnoremap <expr> k v:count ? 'j' : 'g<down>'
 nnoremap <expr> l v:count ? 'k' : 'g<up>'
-map K kkkkk
-map L lllll
+map K 5k
+map L 5l
 
 noremap <C-w> :call CloseBuffer()<Enter>
 noremap zw :call CloseBuffer()<cr>:call CloseBuffer()<cr>:call CloseBuffer()<cr>:call CloseBuffer()<cr>:call CloseBuffer()<cr>:call CloseBuffer()<cr>
@@ -222,6 +236,10 @@ nmap yo  <Plug>Ysurround
 xmap O   <Plug>VSurround
 nmap <space>o yoiw
 nmap <space>O yoiW
+" arg-text-object
+nnoremap d, d<Plug>SidewaysArgumentTextobjA
+nnoremap y, y<Plug>SidewaysArgumentTextobjI
+nnoremap c, c<Plug>SidewaysArgumentTextobjI
 
 set list
 set listchars=tab:›\ ,trail:•,extends:#,nbsp:. " Highlight problematic whitespace

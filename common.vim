@@ -8,7 +8,7 @@ set nocompatible
 set ignorecase
 set incsearch
 set hlsearch
-set shiftwidth=4 tabstop=4 shiftwidth=4 smarttab expandtab
+set shiftwidth=4 tabstop=4 softtabstop=4 smarttab expandtab
 " insert from system clipboard
 set clipboard^=unnamed,unnamedplus
 set viewoptions-=options
@@ -21,8 +21,8 @@ set copyindent
 set nofoldenable
 
 " My Esc button is swapped with the CAPS LOCK btn on the OS level. Reasoning: http://vim.wikia.com/wiki/Avoid_the_escape_key
-nnoremap <space><esc> :noh<cr>
-nnoremap <tab> :noh<cr>
+nnoremap <silent> <space><esc> :noh<cr>
+nnoremap <silent> <tab> :noh<cr>
 nnoremap <esc> zz
 
 " jkl; instead of hjkl
@@ -43,16 +43,17 @@ nnoremap dj vhd
 nnoremap dk dj
 nnoremap dl dk
 nnoremap d; vld
-noremap cj vhc
-noremap ck cj
-noremap cl dk
-noremap c; vlc
+nnoremap cj vhc
+nnoremap ck cj
+nnoremap cl dk
+nnoremap c; vlc
 
 " positioning
 noremap <Up> zbkj
 noremap <Down> ztkj
 noremap <Left> ^
-noremap <Right> g_
+noremap <Right> $
+xnoremap <Right> g_
 noremap <Home> I
 noremap <End> A
 " RED+BLUE+jkl; act like ctrl+arrows. You can use them to navigate between words and guarantee that c-left will go to prev word rather then beginning of current word
@@ -78,8 +79,6 @@ imap <c-PageUp> <esc><c-PageUp>
 nnoremap U <C-r>
 " on Rog redblue keyboard, RED+w = plus
 nmap + :wq<Enter>
-" = to fix current line indent
-nnoremap = V=
 " Enter to insert a new line but stay in normal mode
 nnoremap <Return> o<Esc>
 " J used to be for join - changing to zj
@@ -109,6 +108,7 @@ nnoremap q ciw
 noremap ga gg
 nnoremap gs <c-]>
 noremap go <c-o>
+noremap gO <c-i>
 noremap g- ^W
 " duplicate line but preserve cursor position and the clipboard
 nnoremap <space>y mX"9yy"9p`Xj
@@ -141,8 +141,14 @@ xmap z" "tdi"t"<Esc>
 xmap z' "tdi't'<Esc>
 xmap z< "tdi<t><Esc>
 
+" = to fix current line indent
+nnoremap = V=
+" single tap
 nnoremap < <<
 nnoremap > >>
+" Keep a block highlighted while shifting
+xnoremap < <gv
+xnoremap > >gv
 
 " brackets
 noremap ) }
@@ -182,6 +188,8 @@ nnoremap y# mX$F#wyg_`X
 nnoremap y- mX^Wyg_`X
 " yank right side of the assignment
 nnoremap y= mX^f=wy$`X
+" yank ClassName:: with two colons
+nnoremap y: y2f:
 
 " replace-with-register but preserve the cursor position
 nmap h gr
@@ -199,12 +207,13 @@ nnoremap ds mXdd`X
 " delete line, but only keep 'soft line' in register
 nnoremap dh mX^vg_y"_dd`X
 nnoremap d/ mX$2F/gel"9D`X
-nnoremap d- mX^WD`X
+nnoremap d- mX^WD"_x`X
 nnoremap d# mX$F#wD`X
 nnoremap d= mX^f=wD`X
-" a-la argument text object
+" a-la argument text object (replaed with Sideways pluging mappings in vimrc)
 nnoremap d, F,dt,
 nnoremap d. das
+nnoremap d: d2f:
 
 " change
 " change-after-equal-sign
@@ -233,6 +242,8 @@ onoremap ` i`
 onoremap w iw
 onoremap q iW
 xnoremap q iW
+" character text object
+onoremap c l
 " ... except when I delete word, I usually want to delete A word
 nnoremap dw daw
 nnoremap dq daW
